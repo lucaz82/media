@@ -8,6 +8,11 @@ Installation and configuration of the hypervisor
 ### [Mediahost](Mediahost.md)
 Installation and configuration of the docker host running all media apps
 
+<br>
+
+### [Bash Aliases](aliases.md)
+My file I use on nearly any linux machine
+
 ## Roadmap
 - Documentation for Plex
 - Documentation for Arr-Suite
