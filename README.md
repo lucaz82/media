@@ -1,8 +1,6 @@
 # Overview
 This document shows the setup of our complete mediaserver - this is not a beginner tutorial, just a mockup for owners to remember made steps
 
-<br/>
-
 ## Tree
 ### [Proxmox](Proxmox.md)
 Installation and configuration of the hypervisor
@@ -10,15 +8,11 @@ Installation and configuration of the hypervisor
 ### [Mediahost](Mediahost.md)
 Installation and configuration of the docker host running all media apps
 
-<br/>
-
 ## Roadmap
 - Documentation for Plex
 - Documentation for Arr-Suite
 - Documentation Kometa
 - Documentation Downloader with VPN and Indexer
-
-<br/>
 
 ## Powerusers
 

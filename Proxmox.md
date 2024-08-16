@@ -89,3 +89,8 @@ __e.g.__ <br/>
 - use virtio<number> to attach it in order if needed
 - one can check the assignment on `vm -> hardware`
 ![VM-Disks Overview](pictures/vm-disks.png)
+
+<br/>
+<br/>
+
+[Jump to parent file](Readme.md)

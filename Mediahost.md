@@ -127,3 +127,8 @@ Information: You may need to update /etc/fstab.
 
 then extend it finally <br/>
 `resize2fs /dev/sda2`
+
+<br/>
+<br/>
+
+[Jump to parent file](Readme.md)
