@@ -1,14 +1,17 @@
 # Use on Debian
+
 `~/.bashrc`
 
 # Use on Ubuntu
+
 `~/.bash_aliases`
 
 after editing use
 `source ~/.bashrc`
 
 # Custom additions, append at the end of the file
-```
+
+```bash
 #<! BEGIN CUSTOM
 
 ###########

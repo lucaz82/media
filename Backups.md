@@ -1,8 +1,10 @@
+# Backups
+
 ## Rclone Setup and Config
 
 `sudo -v ; curl https://rclone.org/install.sh | sudo bash`
 
-```
+```bash
 rclone config
 
 n
@@ -64,9 +66,10 @@ y/n> y
 ```
 
 ## Backup Bash Script
-#! TODO: Use check to only stop containers if changes detected
 
-```
+TODO: Use check to only stop containers if changes detected
+
+```bash
 #!/bin/bash
 #################
 # Konfiguration #
