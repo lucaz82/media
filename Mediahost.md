@@ -21,6 +21,7 @@ Setup Putty to connect to the ip and use your private key as auth
 `nano /etc/ssh/sshd_config` and make sure `PermitRootLogin prohibit-password` is set
 
 ## Install and Configure Docker
+
 https://docs.docker.com/engine/install/ubuntu/
 
 Create an folder
@@ -48,7 +49,7 @@ in the `docker-compose.yaml`you can reference those folders using relative paths
       - './data:/data'
 ```
 
-### Install MergeFS
+## Install MergeFS
 
 Update Repository Cache <br/>
 `apt update -y`
@@ -69,7 +70,7 @@ Create new folders with recommended settings using disks which are defined befor
 /mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
 ```
 
-### Disks
+## Disks
 
 use same commands as before to determine disks with ids and place it in `/etc/fstab`
 
