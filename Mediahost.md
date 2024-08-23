@@ -1,4 +1,5 @@
 # Configuration `mediahost` VM
+
 vmid `101`
 The VM holds two users, `root`(0) and `redacted`(1000)<br/>
 
@@ -7,7 +8,8 @@ I usually work with root because I'm an admin and accept the "security risks" <b
 
 The VM uses my custom [aliases](aliases.md)
 
-## SSH 
+## SSH
+
 Create an SSH key in PuttyKeyGen and save it to your computer/private cloud
 
 On the VM goto `/root/.ssh/authorized_keys` and paste the public key in, expanding the file
@@ -15,18 +17,21 @@ On the VM goto `/root/.ssh/authorized_keys` and paste the public key in, expandi
 Setup Putty to connect to the ip and use your private key as auth
 
 ### Edit the ssh config file
+
 `nano /etc/ssh/sshd_config` and make sure `PermitRootLogin prohibit-password` is set
 
 ## Install and Configure Docker
+
 https://docs.docker.com/engine/install/ubuntu/
 
-Create an folder 
+Create an folder
 we are admins, so we work as root - use of other users belonging to the sudoer-group should work, too
 
 mkdir `/docker`
 
 create folders using this structure
-```
+
+```yaml
 /docker/service1
   /docker/service1/config
   /docker/service1/data
@@ -38,12 +43,14 @@ create folders using this structure
 ```
 
 in the `docker-compose.yaml`you can reference those folders using relative paths like
-```
+
+```yaml
     volumes:
       - './data:/data'
 ```
 
-### Install MergeFS
+## Install MergeFS
+
 Update Repository Cache <br/>
 `apt update -y`
 
@@ -54,7 +61,8 @@ Reboot <br/>
 `reboot`
 
 Create new folders with recommended settings using disks which are defined beforehand (see above)
-```
+
+```bash
 # MergerFS to show all systems 1 disk at all times no matter what lies below it || https://github.com/trapexit/mergerfs
 # Movies
 /mnt/movies-disk1:/mnt/movies-disk2 /data/movies mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
@@ -62,12 +70,13 @@ Create new folders with recommended settings using disks which are defined befor
 /mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
 ```
 
-### Disks
+## Disks
+
 use same commands as before to determine disks with ids and place it in `/etc/fstab`
 
 for our usecase we assume the folder `/data` was created and is accessible
 
-```
+```bash
 # SERIES HDD PASSTHROUGH (4TB Seagate 07/2024)
 UUID=5c34014d-50f6-4070-b1c4-673c8d86791e /mnt/series-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
 
@@ -90,7 +99,8 @@ hit apply and reboot vm <br/>
 in the ubuntu vm use `parted`
 
 see below for examples:
-```
+
+```bash
 parted
 
 (parted) print
