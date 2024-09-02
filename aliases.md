@@ -35,6 +35,10 @@ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; h
 ####################
 # Docker Compose
 alias dc='docker compose'
+# Docker Compose up
+alias dcu='docker compose up -d'
+# Docker Compose down
+alias dcd='docker compose down'
 # Docker Compose Logs
 alias dcl='docker compose logs --follow'
 # Switch to my default docker directory
