@@ -138,6 +138,17 @@ Information: You may need to update /etc/fstab.
 then extend it finally <br/>
 `resize2fs /dev/sda2`
 
+
+## Guest tools
+
+<https://pve.proxmox.com/wiki/Qemu-guest-agent>
+
+`apt-get install qemu-guest-agent`
+`systemctl start qemu-guest-agent`
+`systemctl enable qemu-guest-agent`
+
+
+
 <br/>
 <br/>
 
