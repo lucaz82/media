@@ -159,6 +159,28 @@ Check the available free space:
 `systemctl enable qemu-guest-agent` <br/>
 
 
+### Outpooling Plex-Cache (same works for jellyfin)
+
+In `/docker/plex/docker-compose.yaml`
+Add
+
+```YAML
+- '/data/plex-cache:/config/Library/Application Support/Plex Media Server/Cache'
+```
+
+=> we're remapping the cache from inside the container towards `/data/plex-cache`
+
+Optional, but useful since we use plex-cache deleter
+
+since our data foldier lies under `/docker/plex/config` we need to go to `./Library/Application Support/Plex Media Server`<br/>
+
+`mv Cache Cache.old` <br/>
+
+and create a symlink<br/>
+`ln -s /data/plex-cache/`<br/>
+
+`chown -R chef: plex-cache`<br/>
+
 
 
 <br/>
