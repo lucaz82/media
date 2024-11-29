@@ -103,6 +103,8 @@ __e.g.__ <br/>
 `nano /etc/kernel/cmdline`
 add
 `intel_iommu=on`
+`update-grub`
+
 reboot
 ![Add PCIe Card to VM](<2024-11-29 18_14_16-Window.png>)
 
