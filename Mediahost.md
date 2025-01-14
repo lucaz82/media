@@ -96,56 +96,90 @@ First: goto proxmox and verify the free space at the zfs pool or storage block <
 then increase the vm disk size under hardware -> disk action -> increase size -> increment in GB
 
 hit apply and reboot vm <br/>
-in the ubuntu vm use `parted`
 
-see below for examples:
+in the ubuntu vm use `cfdisk`
 
-```bash
-parted
+#### Rescan Disk devices
 
-(parted) print
-Model: QEMU QEMU HARDDISK (scsi)
-Disk /dev/sda: 53,7GB
-Sector size (logical/physical): 512B/512B
-Partition Table: gpt
-Disk Flags:
+`echo 1>/sys/class/block/sda/device/rescan`
 
-Number  Start   End     Size    File system  Name  Flags
- 1      1049kB  2097kB  1049kB                     bios_grub
- 2      2097kB  50,0MB  47,9MB  ext4
+#### Check which partition
 
-(parted) resizepart
-Partition number? 2
-Warning: Partition /dev/sda2 is being used. Are you sure you want to continue?
-Yes/No? Yes
-End?  [50,0MB]? 50GB
-(parted) print
-Model: QEMU QEMU HARDDISK (scsi)
-Disk /dev/sda: 53,7GB
-Sector size (logical/physical): 512B/512B
-Partition Table: gpt
-Disk Flags:
+`lsblk`
 
-Number  Start   End     Size    File system  Name  Flags
- 1      1049kB  2097kB  1049kB                     bios_grub
- 2      2097kB  50,0GB  50,0GB  ext4
+#### Extend via CFdisk
 
-(parted)
+- Select desired partition e.g. `/dev/sda2`
+- Select Resize, select new size
+- Select Write from the menu to save the changes to the disk partition layout
+- Quit cfdisk
 
-Information: You may need to update /etc/fstab.
-```
 
-then extend it finally <br/>
-`resize2fs /dev/sda2`
+#### If using LVM:
 
+Let’s review LVM’s concepts and terms:
+> Physical Volume (PV) – your physical disks (/dev/sda, /dev/sdb, etc.)
+> Volume Group (VG) – contains one or more physical volumes (disks). For example, ubuntu-vg = /dev/sda + /dev/sdb
+> Logical Volume (LV) – is a logical volume in a volume group. For example: ubuntu-vg/root, ubuntu-vg/home, etc.
+
+Check the available free space in your LVM volume group:
+
+`vgdisplay`
+
+
+In order to expand an LVM partition, you first need to increase the size of the PV (Physical Volume):
+
+`pvresize /dev/sda3`
+
+Now you may extend the logical volume. In this case, we will resize the volume using all the free space available:
+
+`lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv`<br/>
+Logical volume ubuntu-vg/ubuntu-lv successfully resized.
+
+
+
+#### Anyways, we have to expand the file system
+
+For ext2, ext3 and ext4, run the command below:
+
+`resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+
+Check the available free space:
+
+`df -h`
 
 ## Guest tools
 
 <https://pve.proxmox.com/wiki/Qemu-guest-agent>
 
-`apt-get install qemu-guest-agent`
-`systemctl start qemu-guest-agent`
-`systemctl enable qemu-guest-agent`
+`apt-get install qemu-guest-agent` <br/>
+
+`systemctl start qemu-guest-agent` <br/>
+
+`systemctl enable qemu-guest-agent` <br/>
+
+
+### Outpooling Plex-Cache (same works for jellyfin)
+
+In `/docker/plex/docker-compose.yaml`
+Add
+
+```YAML
+- '/data/plex-cache:/config/Library/Application Support/Plex Media Server/Cache'
+```
+
+=> we're remapping the cache from inside the container towards `/data/plex-cache`
+
+Optional, but useful since we use plex-cache deleter
+
+since our data foldier lies under `/docker/plex/config` we need to go to `./Library/Application Support/Plex Media Server`<br/>
+
+`mv Cache Cache.old` <br/>
+
+and create a symlink<br/>
+`ln -s /data/plex-cache/`<br/>
+
+`chown -R chef: plex-cache`<br/>
 
 
 

@@ -97,6 +97,17 @@ __e.g.__ <br/>
 - one can check the assignment on `vm -> hardware`
 ![VM-Disks Overview](pictures/vm-disks.png)
 
+
+## iGPU Passtrough to VM
+
+`nano /etc/kernel/cmdline`
+add
+`intel_iommu=on`
+`update-grub`
+
+reboot
+![Add PCIe Card to VM](<2024-11-29 18_14_16-Window.png>)
+
 <br/>
 <br/>
 
