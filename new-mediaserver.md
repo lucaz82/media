@@ -50,6 +50,24 @@ optional
 - copy pub key to
   - `/root/.ssh/authorized_keys`
 
+### remote luks
+
+<https://www.cyberciti.biz/security/how-to-unlock-luks-using-dropbear-ssh-keys-remotely-in-linux/>
+
+- view current disks
+  - `lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT`
+- install dropbear-initramfs
+  - `apt update -y && apt upgrade -y`
+  - `apt install dropbear-initramfs`
+- paste previosly generated keys to (like ssh)
+  - `/etc/dropbear/initramfs/authorized_keys`
+- edit config file
+  - `nano /etc/dropbear/initramfs/dropbear.conf`
+- set parameters
+  - `DROPBEAR_OPTIONS="-I 0 -j -k -p 2222 -s -c cryptroot-unlock"`
+    - <https://linux.die.net/man/8/dropbear>
+- update initram
+  - `update-initramfs -u`
 
 ## disks
 
