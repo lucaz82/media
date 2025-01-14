@@ -4,10 +4,6 @@
 
 `~/.bashrc`
 
-## Use on Ubuntu
-
-`~/.bash_aliases`
-
 after editing use
 `source ~/.bashrc`
 
