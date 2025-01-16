@@ -1,0 +1,25 @@
+services:
+# Series Automater
+  sonarr:
+    container_name: sonarr
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - TZ=Europe/Berlin
+    image: ghcr.io/hotio/sonarr:latest
+    ports:
+      - '8989:8989'
+    restart: unless-stopped
+    volumes:
+      - ./config/sonarr:/config
+      - /data:/data
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - media
+    devices:
+      - /dev/dri:/dev/dri # Enable Intel Quicksync ==> https://docs.linuxserver.io/images/docker-plex/#intel
+
+networks:
+  media:
+    external: true
+    name: media

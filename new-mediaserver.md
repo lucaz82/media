@@ -1,5 +1,12 @@
 # Mediaserver 2025
 
+## bei Umzug zu sichern
+- authorized_keys
+- media /docker
+- minecraft /docker
+- /etc/fstab
+- boot loader options
+
 
 ## overview
 
