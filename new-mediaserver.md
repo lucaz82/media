@@ -1,23 +1,22 @@
 # Mediaserver 2025
 
-## bei Umzug zu sichern
-- authorized_keys
-- media /docker
-- minecraft /docker
-- /etc/fstab
-- boot loader options
-
-
 ## overview
 
-**TLDR:** We kicked proxmox because it's not really production ready - we do it our own - **KISS**
+**TLDR: KISS**
 
-|      |              |                              |
-| ---- | ------------ | ---------------------------- |
-| OS   | Ubuntu 24.04 | install via ISO on USB Stick |
-| IP   | dhcp         | via netplan                  |
-| boot | /root LVM    | 256GB SSD and 512GB SSD      |
+- OS: Ubuntu 24.04, install via ISO on USB Stick
+- IP: dhcp, via netplan
 
+
+### software raid
+
+
+| raw size in gb | type | manufacterer | purchased |
+| -------------- | ---- | ------------ | --------- |
+| 256            | SSD  | samsung      | ??/????   |
+| 512            | SSD  | intel        | ??/????   |
+
+![configure md0 on install](<img/md0.jpg>)
 
 ### directories
 
@@ -35,7 +34,9 @@
 |         | music/      | ssd  | mounted from /etc/fstab                             |
 
 
-### basic config
+## config
+
+### change login options
 
 we are root so after installing we do
 
@@ -57,7 +58,26 @@ optional
 - copy pub key to
   - `/root/.ssh/authorized_keys`
 
-### remote luks
+my custom [aliases](aliases.md)
+
+### copy before migration
+- copy
+  - authorized_keys
+  - mediahost /docker
+  - minecraft-docker /docker
+  - /etc/fstab
+  - boot loader options
+
+### install tools
+- `apt-install`
+  - `mergerfs joe mc progress iotop nmon`
+
+### install docker
+
+https://docs.docker.com/engine/install/ubuntu/
+
+
+### TODO: install remote luks
 
 <https://www.cyberciti.biz/security/how-to-unlock-luks-using-dropbear-ssh-keys-remotely-in-linux/>
 
@@ -76,30 +96,10 @@ optional
 - update initram
   - `update-initramfs -u`
 
-## disks
 
-### boot
+## fstab
 
-spans an lvm on top
-
-| raw size in gb | type | manufacterer | purchased |
-| -------------- | ---- | ------------ | --------- |
-| 256            | SSD  | samsung      | ??/????   |
-| 512            | SSD  | kingston     | ??/????   |
-
-### data
-
-combined with snapraid
-
-| raw size in gb | type | manufacterer    | purchased |
-| -------------- | ---- | --------------- | --------- |
-| 1000           | HDD  | Seagate         | ??/????   |
-| 1000           | HDD  | Hitachi         | ??/????   |
-| 4000           | HDD  | Seagate         | 07/2024   |
-| 4000           | HDD  | Western Digital | ??/????   |
-
-
-### fstab old
+<details><summary>old</summary>
 
 ```bash
 # /etc/fstab: static file system information.
@@ -131,13 +131,44 @@ UUID=afb11cdf-d080-4c87-a420-387f7acee893 /data/usenet auto nosuid,nodev,nofail,
 # Series
 /mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
 ```
+</details>
 
-## docker
-
-https://docs.docker.com/engine/install/ubuntu/
-
+<details><summary>new</summary>
 ```bash
-apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
-```
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/vg0/lv-0 during curtin installation
+# https://alexskra.com/blog/ubuntu-20-04-with-software-raid1-and-uefi/
+/dev/disk/by-id/dm-uuid-LVM-HkqjQKro7jkuffVLyJ2dSVsOnzbV3cniAgQk1N9EW8x8NcqxdAixw2mbchVOZQtS / ext4 defaults 0 1
+/swap.img       none    swap    sw      0       0
 
-## snapraid
+# SERIES HDD (4TB Seagate 07/2024)
+UUID=5c34014d-50f6-4070-b1c4-673c8d86791e /mnt/series-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+
+# MOVIES HDD (4TB WD RED ??/????)
+UUID=6f59b908-4376-4ccd-a98a-bc6e8a3abce1 /mnt/movies-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+
+# MOVIES HDD (1TB Seagate ??/????)
+UUID=0b77fe0a-e6c3-49a1-bca3-b30ed7039a08 /mnt/movies-old-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+
+# MOVIES HDD (1TB Hitachi ??/????)
+UUID=13318462-ba16-40b2-9a7b-fc54da4f33c7 /mnt/movies-old-disk2 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+
+# MergerFS to show all systems 1 disk at all times no matter what lies below it || https://github.com/trapexit/mergerfs
+# Movies
+/mnt/movies-old-disk1:/mnt/movies-old-disk2:/mnt/movies-disk1 /data/movies mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
+# Series
+/mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
+```
+</details>
+
+
+<br/>
+<br/>
+
+[Jump to parent file](README.md)
