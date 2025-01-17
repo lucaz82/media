@@ -61,6 +61,7 @@ optional
 my custom [aliases](aliases.md)
 
 ### copy before migration
+
 - copy
   - authorized_keys
   - mediahost /docker
@@ -69,6 +70,7 @@ my custom [aliases](aliases.md)
   - boot loader options
 
 ### install tools
+
 - `apt-install`
   - `mergerfs joe mc progress iotop nmon`
 
@@ -131,9 +133,11 @@ UUID=afb11cdf-d080-4c87-a420-387f7acee893 /data/usenet auto nosuid,nodev,nofail,
 # Series
 /mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
 ```
+
 </details>
 
 <details><summary>new</summary>
+
 ```bash
 # /etc/fstab: static file system information.
 #
@@ -165,8 +169,83 @@ UUID=13318462-ba16-40b2-9a7b-fc54da4f33c7 /mnt/movies-old-disk2 auto nosuid,node
 # Series
 /mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
 ```
+
 </details>
 
+
+## metrics
+
+we use node exporter + prometheus + grafana
+
+<https://gist.github.com/jarek-przygodzki/735e15337a3502fea40beba27e193b04>
+
+- `useradd --system --shell /bin/false node_exporter`
+- 
+  ```bash
+  curl -fsSL https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz \
+    | sudo tar -zxvf - -C /usr/local/bin --strip-components=1 node_exporter-1.8.2.linux-amd64/node_exporter \
+    && chown node_exporter:node_exporter /usr/local/bin/node_exporter
+  ```
+
+- `tee /etc/systemd/system/node_exporter.service <<"EOF"`
+
+  ```bash
+  [Unit]
+  Description=Node Exporter
+
+  [Service]
+  User=node_exporter
+  Group=node_exporter
+  EnvironmentFile=-/etc/sysconfig/node_exporter
+  ExecStart=/usr/local/bin/node_exporter $OPTIONS
+
+  [Install]
+  WantedBy=multi-user.target
+  EOF
+  ```
+
+- 
+  ```bash
+  sudo systemctl daemon-reload && \
+  sudo systemctl start node_exporter && \
+  sudo systemctl status node_exporter && \
+  sudo systemctl enable node_exporter
+  ```
+
+- `cdd`
+- `mkdir monitoring`
+- `touch prometheus.yml`
+- `nano compose.yml`
+- 
+```yaml
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=your_password
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    name: monitoring
+```
+
+## monitoring
+
+external via uptime kuma in cloud instance
 
 <br/>
 <br/>
