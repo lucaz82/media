@@ -7,7 +7,7 @@
 - OS: Ubuntu 24.04, install via ISO on USB Stick
 - IP: dhcp, via netplan
 
-
+---
 ### software raid
 
 
@@ -18,6 +18,7 @@
 
 ![configure md0 on install](<img/md0.jpg>)
 
+---
 ### directories
 
 | dir     | subdir      | type | function                                            |
@@ -54,12 +55,19 @@ optional
 optional
 
 - generade an openssh key via
-  - `ssh-keygen -b 4096`
+  - `ssh-keygen -b 4096`swapoff -a
 - copy pub key to
   - `/root/.ssh/authorized_keys`
 
-my custom [aliases](aliases.md)
+others
+- disable swap
+  - `swapoff -a`
+  - comment it in `/etc/fstab`
+- my custom [aliases](aliases.md)
+- disable modt-news
+  - `nano /etc/default/motd-news`
 
+---
 ### copy before migration
 
 - copy
@@ -69,16 +77,18 @@ my custom [aliases](aliases.md)
   - /etc/fstab
   - boot loader options
 
+---
 ### install tools
 
 - `apt-install`
   - `mergerfs joe mc progress iotop nmon`
 
+---
 ### install docker
 
 https://docs.docker.com/engine/install/ubuntu/
 
-
+---
 ### TODO: install remote luks
 
 <https://www.cyberciti.biz/security/how-to-unlock-luks-using-dropbear-ssh-keys-remotely-in-linux/>
@@ -136,6 +146,8 @@ UUID=afb11cdf-d080-4c87-a420-387f7acee893 /data/usenet auto nosuid,nodev,nofail,
 
 </details>
 
+---
+
 <details><summary>new</summary>
 
 ```bash
@@ -149,25 +161,25 @@ UUID=afb11cdf-d080-4c87-a420-387f7acee893 /data/usenet auto nosuid,nodev,nofail,
 # / was on /dev/vg0/lv-0 during curtin installation
 # https://alexskra.com/blog/ubuntu-20-04-with-software-raid1-and-uefi/
 /dev/disk/by-id/dm-uuid-LVM-HkqjQKro7jkuffVLyJ2dSVsOnzbV3cniAgQk1N9EW8x8NcqxdAixw2mbchVOZQtS / ext4 defaults 0 1
-/swap.img       none    swap    sw      0       0
+#/swap.img       none    swap    sw      0       0
 
 # SERIES HDD (4TB Seagate 07/2024)
-UUID=5c34014d-50f6-4070-b1c4-673c8d86791e /mnt/series-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+UUID=5c34014d-50f6-4070-b1c4-673c8d86791e /data/series auto nosuid,nodev,nofail,x-gvfs-show 0 0
 
 # MOVIES HDD (4TB WD RED ??/????)
-UUID=6f59b908-4376-4ccd-a98a-bc6e8a3abce1 /mnt/movies-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+UUID=6f59b908-4376-4ccd-a98a-bc6e8a3abce1 /data/movies auto nosuid,nodev,nofail,x-gvfs-show 0 0
 
 # MOVIES HDD (1TB Seagate ??/????)
-UUID=0b77fe0a-e6c3-49a1-bca3-b30ed7039a08 /mnt/movies-old-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+#UUID=0b77fe0a-e6c3-49a1-bca3-b30ed7039a08 /mnt/movies-old-disk1 auto nosuid,nodev,nofail,x-gvfs-show 0 0
 
 # MOVIES HDD (1TB Hitachi ??/????)
-UUID=13318462-ba16-40b2-9a7b-fc54da4f33c7 /mnt/movies-old-disk2 auto nosuid,nodev,nofail,x-gvfs-show 0 0
+#UUID=13318462-ba16-40b2-9a7b-fc54da4f33c7 /mnt/movies-old-disk2 auto nosuid,nodev,nofail,x-gvfs-show 0 0
 
 # MergerFS to show all systems 1 disk at all times no matter what lies below it || https://github.com/trapexit/mergerfs
 # Movies
-/mnt/movies-old-disk1:/mnt/movies-old-disk2:/mnt/movies-disk1 /data/movies mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
+#/mnt/movies-old-disk1:/mnt/movies-old-disk2:/mnt/movies-disk1 /data/movies mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
 # Series
-/mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
+#/mnt/series-disk1 /data/series mergerfs defaults,nonempty,allow_other,category.create=mfs,use_ino,cache.files=auto-full,moveonenospc=true,dropcacheonclose=true 0 0
 ```
 
 </details>
@@ -216,32 +228,33 @@ we use node exporter + prometheus + grafana
 - `mkdir monitoring`
 - `touch prometheus.yml`
 - `nano compose.yml`
-- 
-```yaml
-services:
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - monitoring
-  grafana:
-    container_name: grafana
-    image: grafana/grafana
-    ports:
-      - 3000:3000
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=your_password
-    networks:
-      - monitoring
+-
+  ```yaml
+  services:
+    prometheus:
+      container_name: prometheus
+      image: prom/prometheus
+      ports:
+        - 9090:9090
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      networks:
+        - monitoring
+    grafana:
+      container_name: grafana
+      image: grafana/grafana
+      ports:
+        - 3000:3000
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=change_me # only for first start - can be changed via ui
+      networks:
+        - monitoring
 
-networks:
-  monitoring:
-    name: monitoring
-```
+  networks:
+    monitoring:
+      name: monitoring
+  ```
+import dashboard by id: `14513`
 
 ## monitoring
 
